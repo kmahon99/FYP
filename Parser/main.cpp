@@ -1,12 +1,12 @@
 #include <iostream>
 
-#include "parser.h"
+#include "TIFFparser.h"
 
 using namespace std;
 
-int main() {
-    parser p;
+int main(int argc, char* argv[]) {
+    TIFFparser p("/home/kev/Documents/FYP/FYP/images/test_1.TIF");
     cout << "Hello, World!" << endl;
-    cout << p.getPixelStream("C:\\Users\\Kevin\\Documents\\College\\FYP\\images\\test_1.tif") << endl;
+    cout << p.getPixelStream() << endl;
     return 0;
 }
