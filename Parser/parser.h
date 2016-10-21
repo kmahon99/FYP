@@ -6,14 +6,19 @@
 #define PARSER_H
 
 #include <string>
+#include <sstream>
+#include <iostream>
 #include <stdlib.h>
 #include <tiffio.h>
-#include <libraw/libraw.h>
+#include <map>
+#include <fstream>
+#include <vector>
 
 using namespace std;
 
 class Pixel{
 public:
+    Pixel();
     Pixel(int r, int g, int b);
     int getR();
     int getG();
@@ -22,20 +27,42 @@ private:
     int r, g, b;
 };
 
+class TIFFparser{
+public:
+    TIFFparser(const char* filename);
+    Pixel** getPixelStream();
+    int getWidth();
+    int getHeight();
+private:
+    int width, height;
+    Pixel** pixels;
+};
+
 class Sampler{
 public:
-    Sampler(const char* TIFF_filename, const char* RAW_filename);
+    Sampler(const char* img_filename, const char* annotation, int patch_size);
 private:
-    TIFFparser(const char* filename);
-    int TIFFgetWidth();
-    int TIFFgetHeight();
-    Pixel* TIFFgetPixels();
-    RAWparser(const char* filename);
-    int RAWgetWidth();
-    int RAWgetHeight();
-    Pixel* RAWgetPixels();
-    int tiff_width, tiff_height, raw_width, raw_height;
-    Pixel* tiff_pixels, raw_pixels;
+    int nexamples, insize, nclasses;
+};
+
+class Landclass{
+public:
+    Landclass();
+    Landclass(string name, Pixel pixel);
+    string getName();
+    bool hasPixel(Pixel pixel);
+private:
+    string name;
+    Pixel pixel;
+};
+
+class ClassParser{
+public:
+    ClassParser(const char* filename);
+    string getClassname(Pixel pixel);
+private:
+    vector<Landclass> classes;
+    int nclasses;
 };
 
 #endif //PARSER_H

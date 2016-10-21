@@ -13,6 +13,7 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>classes.txt</itemPath>
       <itemPath>main.cpp</itemPath>
       <itemPath>parser.cpp</itemPath>
     </logicalFolder>
@@ -44,6 +45,8 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
+      <item path="classes.txt" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="parser.cpp" ex="false" tool="1" flavor2="0">
@@ -72,9 +75,11 @@
         </asmTool>
         <linkerTool>
           <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/parser</output>
-          <commandLine>-ltiff -lraw</commandLine>
+          <commandLine>-ltiff</commandLine>
         </linkerTool>
       </compileType>
+      <item path="classes.txt" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="parser.cpp" ex="false" tool="1" flavor2="0">
