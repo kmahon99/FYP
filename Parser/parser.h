@@ -23,6 +23,7 @@ public:
     int getR();
     int getG();
     int getB();
+    string toString();
 private:
     int r, g, b;
 };
@@ -42,7 +43,8 @@ class Sampler{
 public:
     Sampler(const char* img_filename, const char* annotation, int patch_size);
 private:
-    int nexamples, insize, nclasses;
+    string getExample(Pixel** stream, int i, int j, int patch_size, string classname, int width, int height);
+    int nexamples, insize, nclasses, examplenum;
 };
 
 class Landclass{
@@ -60,6 +62,7 @@ class ClassParser{
 public:
     ClassParser(const char* filename);
     string getClassname(Pixel pixel);
+    int getNumClasses();
 private:
     vector<Landclass> classes;
     int nclasses;

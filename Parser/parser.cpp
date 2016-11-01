@@ -12,6 +12,17 @@ Pixel::Pixel(int r, int g, int b){
     this->r = r; this->g = g; this->b = b;
 }
 
+string Pixel::toString(){
+    stringstream ss;
+    if(this->r != 0) ss << 255/this->r << " ";
+    else ss << this->r << " ";
+    if(this->g != 0) ss << 255/this->g << " ";
+    else ss << this->g << " ";
+    if(this->b != 0) ss << 255/this->b << endl;
+    else ss << this->b;
+    return ss.str();
+}
+
 int Pixel::getR(){ return this->r; }
 int Pixel::getG(){ return this->g; }
 int Pixel::getB(){ return this->b; }
@@ -19,26 +30,53 @@ int Pixel::getB(){ return this->b; }
 Sampler::Sampler(const char* img_filename, 
         const char* annotation, 
         int patch_size){
-    ClassParser classes("/home/kev/Documents/FYP/FYP/Parser/classes.txt");
     
+    this->examplenum = this->nexamples = 0;
     TIFFparser image(img_filename);
     TIFFparser ann(annotation);
-    if(image.getWidth() == ann.getWidth() 
-            && image.getHeight() == ann.getHeight()){
-        Pixel** image_pixels = image.getPixelStream();
-        Pixel** ann_pixels = ann.getPixelStream();
-        
-        for(int i = 0; i < image.getWidth(); i++){
-            for(int j = 0; j < image.getHeight(); j++){
-                if(ann_pixels[i][j].getR() != 255 &&
-                    ann_pixels[i][j].getG() != 255 &&
-                    ann_pixels[i][j].getB() != 255){
-                    cout << classes.getClassname(ann_pixels[i][j]) << endl;
+    stringstream pixel_stream;
+    vector<string> examples;
+    ClassParser classes("/home/kev/Documents/FYP/FYP/Parser/classes.txt");
+    
+    ofstream file;
+    file.open("OUTPUT.txt");
+    
+    Pixel** img_pixels = image.getPixelStream();
+    Pixel** ann_pixels = ann.getPixelStream();
+    
+    if(image.getWidth() == ann.getWidth() && image.getHeight() == ann.getHeight()){
+        for(int i = 0; i < ann.getWidth(); i++){
+            for(int j = 0; j < ann.getHeight(); j++){
+                this->nexamples++;
+                string classname = classes.getClassname(ann_pixels[i][j]);
+                examples.push_back(this->getExample(img_pixels, i, j, patch_size, classname, image.getWidth(), image.getHeight()));
+            }
+        }
+    }else { cout << "Image and annotation dimensions don't match!" << endl; } 
+    
+    file << this->nexamples << endl;
+    file << patch_size*patch_size*3 << this->nclasses << endl;
+    for(int i = 0; i < examples.size(); i++){
+        file << examples.at(i);
+    }
+    
+    file.close();
+}
+
+string Sampler::getExample(Pixel** stream, int i, int j, int patch_size, string classname, int width, int height){
+    stringstream ss;
+    ss << "example_" << this->examplenum++ << endl << 1 << endl;
+    for(int k = i - patch_size + 1; k < i + patch_size; k++){
+        if(k >= 0 and k < width){
+            for(int l = j - patch_size + 1; l < j + patch_size; l++){
+                if(l >= 0 and l < height){
+                    ss << stream[k][l].toString() << " ";
                 }
             }
         }
-    }
-    else{ cout << "Image dimensions don't match the annotation dimensions!" << endl; }
+    }   
+    ss << endl << classname << endl << endl;  
+    return ss.str();
 }
 
 TIFFparser::TIFFparser(const char* filename){
@@ -96,9 +134,11 @@ bool Landclass::hasPixel(Pixel pixel){
 }
 
 ClassParser::ClassParser(const char* filename){
+    
     ifstream file;
     int linecount = 0;
     file.open(filename);
+    
     if(file.is_open()){
         string line, classname, pixel;
         while(getline(file,line)){
@@ -134,3 +174,5 @@ string ClassParser::getClassname(Pixel pixel){
     }
     return "NONE";
 }
+
+int ClassParser::getNumClasses(){ return this->nclasses; }
